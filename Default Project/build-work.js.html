@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><title>build</title></head><body>
+<script>
+const fs = require("fs");
+const html = fs.readFileSync("index.html", "utf8");
+
+const cards = [];
+
+function cardShort(num, video, titleEn, titleAr, dur) {
+  const pad = num < 10 ? "0" + num : "" + num;
+  const p = ["p4","p1","p2","p3","p5","p6"][num % 6];
+  return `      <article class="card" data-cat="short" data-reveal${num>3?' style="--d:'+(40*((num-1)%3))+'ms"':''}>
+        <button class="card__media ${p}" type="button"
+                data-open-video
+                data-video="${video.replace('?feature=share','')}"
+                data-title-key="w${num+3}.title" data-cat-key="w${num+3}.cat" data-duration="${dur}"
+                aria-label="Play project">
+          <span class="card__perf" aria-hidden="true"></span>
+          <span class="card__play" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="20" height="20"><path d="M9 6l9 6-9 6z" fill="currentColor"/></svg>
+          </span>
+          <span class="card__time">${dur}</span>
+        </button>
+        <div class="card__body">
+          <h3 data-i18n="w${num+3}.title">${titleEn}</h3>
+          <p><span data-i18n="w${num+3}.cat">Short form</span> · 2025</p>
+        </div>
+      </article>`;
+}
+
+const shorts = [
+  ["https://youtube.com/shorts/7fm2zatnq78","Reels — 01","ريلز — ٠١","0:28"],
+  ["https://youtube.com/shorts/IKEepfDUaXo","Reels — 02","ريلز — ٠٢","0:27"],
+  ["https://youtube.com/shorts/M0tYHAXzVj4","Reels — 03","ريلز — ٠٣","0:29"],
+  ["https://youtube.com/shorts/6KPJukLfh-o","Reels — 04","ريلز — ٠٤","0:31"],
+  ["https://youtube.com/shorts/z0Wc16_cERI","Reels — 05","ريلز — ٠٥","0:26"],
+  ["https://youtube.com/shorts/2pBuE3GHFC8","Reels — 06","ريلز — ٠٦","0:30"],
+  ["https://youtube.com/shorts/SZSn0LHM3W4","Reels — 07","ريلز — ٠٧","0:29"],
+  ["https://youtube.com/shorts/9vvmziuxYZE","Reels — 08","ريلز — ٠٨","0:27"],
+  ["https://youtube.com/shorts/Beurs5v_zaw","Reels — 09","ريلز — ٠٩","0:28"],
+  ["https://youtube.com/shorts/1i6YKyEMqYQ","Reels — 10","ريلز — ١٠","0:27"],
+  ["https://youtube.com/shorts/OUNqg6V-1dY","Reels — 11","ريلز — ١١","0:30"],
+  ["https://youtube.com/shorts/6UfRbaIOGvo","Reels — 12","ريلز — ١٢","0:28"],
+  ["https://youtube.com/shorts/m_bk7VYSm6E","Reels — 13","ريلز — ١٣","0:26"],
+  ["https://youtube.com/shorts/nBewvt20Bv8","Reels — 14","ريلز — ١٤","0:29"],
+];
+shorts.forEach((s,i)=> cards.push(cardShort(i,s[0],s[1],s[2],s[3])));
+
+function cardLong(cat, video, titleEn, titleAr, dur) {
+  const idx = cards.length;
+  const p = ["p5","p6","p3"][idx % 3];
+  return `      <article class="card" data-cat="${cat}" data-reveal${idx%3?' style="--d:'+(60*(idx%3))+'ms"':''}>
+        <button class="card__media ${p}" type="button"
+                data-open-video
+                data-video="${video}"
+                data-title-key="w${idx+4}.title" data-cat-key="w${idx+4}.cat" data-duration="${dur}"
+                aria-label="Play project">
+          <span class="card__perf" aria-hidden="true"></span>
+          <span class="card__play" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="20" height="20"><path d="M9 6l9 6-9 6z" fill="currentColor"/></svg>
+          </span>
+          <span class="card__time">${dur}</span>
+        </button>
+        <div class="card__body">
+          <h3 data-i18n="w${idx+4}.title">${titleEn}</h3>
+          <p><span data-i18n="w${idx+4}.cat">${cat==='ads'?'Real Estate':cat==='music'?'Music video':cat==='pod'?'Documentary'}</span> · 2025</p>
+        </div>
+      </article>`;
+}
+
+const real = [
+  ["ads","https://youtu.be/qnOgnyXI_Pc","Real Estate — 01","عقار — ٠١","1:12"],
+  ["ads","https://youtu.be/n0ysHDA-LVY","Real Estate — 02","عقار — ٠٢","1:08"],
+  ["ads","https://youtu.be/GnjTvH4Y6xU","Real Estate — 03","عقار — ٠٣","1:15"],
+  ["ads","https://youtu.be/zARVr21b_B0","Real Estate — 04","عقار — ٠٤","1:06"],
+  ["ads","https://youtu.be/EussGkYmZRE","Real Estate — 05","عقار — ٠٥","1:10"],
+  ["ads","https://youtu.be/9Q-VFnlKj4k","Real Estate — 06","عقار — ٠٦","1:14"],
+];
+real.forEach(r=> cards.push(cardLong(r[0],r[1],r[2],r[3],r[4])));
+
+const clips = [
+  ["music","https://youtu.be/aKLm9KH7SA4","Music Video — 01","فيديو كليب — ٠١","3:24"],
+  ["music","https://youtu.be/REU_ThPyuhE","Music Video — 02","فيديو كليب — ٠٢","3:18"],
+];
+clips.forEach(c=> cards.push(cardLong(c[0],c[1],c[2],c[3],c[4])));
+
+cards.push(cardLong("pod","https://youtu.be/lhIZlzmnLRc","Story / Documentary — 01","قصة / وثائقي — ٠١","2:46"));
+
+const grid = cards.join("\n\n");
+
+const start = html.indexOf('      <article class="card" data-cat="ads"');
+const end = html.indexOf('    </div>\n\n    <p class="work-note"');
+html = html.slice(0,start) + grid + "\n\n    </div>\n\n    <p class=\"work-note\"" + html.slice(end + ('    </div>\n\n    <p class="work-note"').length);
+
+fs.writeFileSync("index.html", html);
+console.log("done", cards.length);
+</script>
+</body></html>
